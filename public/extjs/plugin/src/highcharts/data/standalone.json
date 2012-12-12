@@ -1,0 +1,41 @@
+{
+    "rows": [
+        {
+            "id": "1",
+            "nama_lapangan": "Lapangan 1",
+            "jumlah": "9",
+            "id_lapangan": "1"
+        },
+        {
+            "id": "2",
+            "nama_lapangan": "Lapangan 2",
+            "jumlah": "28",
+            "id_lapangan": "2"
+        },
+        {
+            "id": "3",
+            "nama_lapangan": "Lapangan 3",
+            "jumlah": "8",
+            "id_lapangan": "3"
+        },
+        {
+            "id": "4",
+            "nama_lapangan": "Lapangan 4",
+            "jumlah": "1",
+            "id_lapangan": "4"
+        },
+        {
+            "id": "5",
+            "nama_lapangan": "Lapangan 5",
+            "jumlah": null,
+            "id_lapangan": null
+        },
+        {
+            "id": "7",
+            "nama_lapangan": "Lapangan 6",
+            "jumlah": null,
+            "id_lapangan": null
+        }
+    ],
+    "success": true
+}

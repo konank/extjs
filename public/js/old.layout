@@ -1,0 +1,148 @@
+var BASE_URL = './';
+Ext.require([
+    'Ext.panel.Panel',
+    'Ext.Action',
+    'Ext.button.Button',
+    'Ext.window.MessageBox'
+]);
+
+Ext.onReady(function() {
+var icon = './';
+
+    var layout_west1 = new Ext.tree.TreePanel({
+    region: 'north', title: 'Menus', height: 250, bodyStyle: 'margin-bottom:6px;',
+    autoScroll: true, enableDD: false, rootVisible: false, id: 'treePanel',
+    root: {
+        text: 'Menu',
+        expanded: true,
+        nodeType: 'async',
+        children: [{
+            text: 'Menu 1',
+            expanded: true,
+            children: [{
+                text: 'Menu 1.3',
+                leaf: true
+            }, {
+                text: 'Menu 1.2',
+                expanded: true,
+                children: [{
+                    text: 'Menu 1.2.1',
+                    leaf: true
+                }, {
+                    text: 'Menu 1.2.2',
+                    leaf: true
+                }, {
+                    text: 'Menu 1.2.3',
+                    leaf: true
+                }]
+            }]
+        }, {
+            text: 'Menu 2',
+            expanded: true,
+            children: [{
+                text: 'Menu 2.1',
+                leaf: true
+            }, {
+                text: 'Menu 2.2',
+                leaf: true
+            }]
+        }, {
+            text: 'Logout',
+            id: 'logout',
+            icon: icon + 'icon/minus-circle.png',
+            leaf: true
+        }]
+    },
+    listeners: {
+        click: function(n) {
+            switch (n.id) {
+                case 'logout':
+                    do_logout();
+                    break;
+            }
+        }
+    }
+});
+
+
+var tab_center = new Ext.TabPanel({
+    minTabWidth: 115, tabWidth: 135,
+    
+    items: [
+    
+        {
+            title: 'Bar',
+            tabConfig: {
+                title: 'Welcome',
+                tooltip: 'A button tooltip',
+                
+            },
+            html:'Welcome to Web base application',
+            closable:false,
+        },
+        //{
+//            title: 'Tab',
+//            
+//            
+//            closable:true,
+//             loader: {
+//                url: 'tabmenu',
+//                contentType: 'html',
+//                loadMask: true
+//            },
+//            listeners: {
+//                    activate: function(tab) {
+//                        tab.loader.load();
+//                    }
+//                }
+//        }
+    ],
+    renderTo : Ext.getBody()
+});
+
+var tbCenter = new Ext.Toolbar({
+    items: ['->', {
+        icon: icon + 'icon/minus-circle.png',
+        text: 'Logout',
+        handler: do_logout
+    },{
+            text: 'Button',
+            icon:icon+'icon/cog.png'
+    },]
+});
+
+var layout_center = new Ext.Panel({
+    id: 'content-panel', region: 'center', layout: 'card', margins: '0 5 5 0',
+    activeItem: 0, border: true, tbar: tbCenter, items: [tab_center]
+});
+
+var layout_main = new Ext.Viewport({
+	layout: 'border', renderTo: Ext.getBody(),
+	items: [
+        { region: 'north', autoHeight: true, border: false,
+            html: '<div id="header">Smart system<span style="font-size:12px;"> &nbsp; Web base application</span></div>',
+            margins: '0 0 5 0', style: 'border-bottom: 4px solid #4c72a4;' },
+        { region: 'west', baseCls: 'x-plain', xtype: 'panel', autoHeight: true,
+            width: 180, border: false,
+            split: true, margins: '0 0 0 5', 
+            items: [layout_west1]
+            //sample tambahkan items items: [layout_west1,layout_west2] buat variable layout_west2
+        }, layout_center
+        
+        ]
+});
+
+function do_logout() {
+    Ext.Ajax.request({
+        url: BASE_URL + 'dashboard/logout',
+        method: 'POST',
+        success: function(xhr) {
+            window.location = BASE_URL + 'login';
+        }
+    });
+}
+
+layout_main.show();
+
+});
+        

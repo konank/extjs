@@ -1,0 +1,15 @@
+Ext.onReady(function(){
+    new Ext.Viewport({
+        layout : 'border',
+        defaults : {
+            split : true
+        },
+        items : [
+            {region:'north',html:'Atas'},// 1
+            {region:'east',html:'Kanan'},// 2
+            {region:'west',html:'Kiri'},// 3
+            {region:'center',html:'Tengah'},// 4
+            {region:'south',html:'Bawah'}// 5
+        ]
+    });
+});

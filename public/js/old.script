@@ -1,0 +1,40 @@
+<script>
+ var tab_center =  new Ext.TabPanel({
+          items: [
+                {
+                    title: 'Dashboard',
+                    padding : '5',
+                    closable:false,
+                    loader: {
+                        url: '<?php echo base_url() ?>dashboard/homepage', //disini link ajax nya
+                        contentType:'html',
+                        rendered:'html',
+                        loadMask: true
+                    },
+                    listeners: {
+                        activate: function(tab_center) {
+                            //tab.store.load(); 
+                             tab_center.loader.load();
+                            
+                        }
+                    },
+                },
+            ],
+        })
+        
+        var layout_center = new Ext.Panel({
+            id: 'content-panel', region: 'center', layout: 'card', margins: '5 5 5 5',
+            activeItem: 0, border: false, items: [tab_center]
+        });
+        
+        
+        //listener combobox
+         listeners : {
+                                select : function(combobox, record, index){
+                                    var value = combobox.getValue();
+                                    var record = combobox.findRecord(combobox.valueField || combobox.displayField, value);
+                                    var tipe = combobox.store.indexOf(record);
+                                    
+                                }
+                            },
+</script>

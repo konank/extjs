@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Welcome administration</title>
+    
+    <link rel="stylesheet" type="text/css" href="<?php echo base_url('public/extjs/resources/css/ext-all.css') ?>" />
+    <link rel="stylesheet" type="text/css" href="<?php echo base_url('assets/style.css') ?>" />
+    
+    <script type="text/javascript" src="<?php echo base_url('public/extjs/ext-all-debug.js') ?>"></script>
+    <script type="text/javascript" src="<?php echo base_url('public/extjs/ext-all.js') ?>"></script>
+    <script type="text/javascript">
+	var BASE_URL = '<?php echo site_url(); ?>';
+    Ext.Loader.setConfig({
+        enabled: true
+    });
+    Ext.require(['*']);
+    
+    
+
+    Ext.onReady(function() {
+        
+       // Ext.ux.IFrameComponent = Ext.extend(Ext.BoxComponent, {
+//     onRender : function(ct, position){
+//          this.el = ct.createChild({tag: 'iframe','class':this.title, id: this.id, name:this.name, frameBorder: 0, src: this.url});
+//         }
+//    });
+       var tab_center =  new Ext.TabPanel({
+          items: [
+                {
+                    title: 'Dashboard',
+                    padding : '5',
+                    closable:false,
+                    loader: {
+                        url: '<?php echo base_url() ?>dashboard/homepage', //disini link ajax nya
+                        contentType:'html',
+                        rendered:'html',
+                        loadMask: true
+                    },
+                    listeners: {
+                        activate: function(tab_center) {
+                            //tab.store.load(); 
+                             tab_center.loader.load();
+                            
+                        }
+                    },
+                },
+            ],
+        })
+        
+        
+        var layout_center = new Ext.Panel({
+            id: 'content-panel', region: 'center', layout: 'card', margins: '5 5 5 5',
+            activeItem: 0, border: false, items: [tab_center]
+        });
+        
+        
+        Ext.define('ForumThread', {
+            extend: 'Ext.data.Model',
+            fields: ['username', 'name','created','tipe_user'],
+            idProperty: 'threadid'
+        });
+        
+    	var store = Ext.create('Ext.data.Store', {
+            pageSize: 50,autoLoad: true,
+    
+            model: 'ForumThread',
+            proxy: {
+                // load using script tags for cross domain, if the data in on the same domain as
+                // this page, an HttpProxy would be better
+                type: 'ajax',
+                url: '<?php echo base_url() ?>manages/getdatamanages',
+                reader: {
+                    root: 'users',
+                    successProperty:'success',
+                },
+            },
+        });
+    	// create the grid
+    	var grid = Ext.create('Ext.grid.Panel', {
+    		store: store,
+    		columns: [
+    			{header: 'Usernames',  dataIndex: 'username',  flex: 1},
+                {header: 'Name', dataIndex: 'name', flex: 1},
+                {header: 'Created', dataIndex: 'created', flex: 1},
+                {header: 'User type', dataIndex: 'tipe_user', flex: 1},
+    		],
+    		stripeRows: true,
+    		height:180,
+    		width:500,
+    		//renderTo: 'grid-example',
+    		title:'Straw Hats Crew'
+    	});
+        
+        
+        Ext.create('Ext.Viewport', {
+            layout: {
+                type: 'border',
+                padding: 5
+            },
+            defaults: {
+                split: true
+            },
+            items: [{
+                region: 'west',
+                collapsible: true,
+                title: 'Starts at width 30%',
+                split: true,
+                width: '30%',
+                minWidth: 100,
+                minHeight: 140,
+                
+                
+                itemId: 'nav',
+                xtype: 'treepanel',
+                title: 'Menu Navigation',
+                margins: '5 0 5 5',
+                root: {
+                    expanded: true,
+                    
+                    children: 
+                    [{
+                        text: 'Usermanagement',
+                        expanded: true,
+                        children: [{
+                            text: 'Manage users',
+                            panel: 'manages',
+                            leaf: true
+                        }, ]
+                    }, {
+                        text: 'Menu 2',
+                        expanded: true,
+                        children: [{
+                            text: 'Menu 2.1',
+                            panel:'tabTes',
+                            leaf: true
+                        }, {
+                            text: 'Menu 2.2',
+                            leaf: true
+                        }]
+                    }, {
+                        text: 'Logout',
+                        id: 'logout',
+                        leaf:true,
+                        icon: BASE_URL + 'public/icons/minus-circle.png',
+                        panel : 'logout'
+                    }]
+                },
+                listeners: {
+                    itemclick: function(view,rec) {
+                       if (!rec.raw || !rec.raw.panel) return;
+                       if(rec.raw.panel == 'logout'){
+                            do_logout();
+                        } else {
+                            loadTab(view,rec);
+                            
+                        }
+                    }
+                },
+            },{
+                itemId: 'tabs',
+                id : 'myTPanel',
+                layout:'fit',
+                border : false,
+                region: 'center',
+                paddings: '5 5 5 5',
+                //items :tab_center
+                plain: true,
+			     activeTab:0,
+                xtype:'tabpanel',
+                plain: true,
+                items: [{
+                  title: 'Grid',
+                  //items : gridss
+                  
+                  loader: {
+                        url: '<?php echo base_url() ?>manages',
+                        
+                        contentType: 'html',
+                        loadMask: true,
+
+                    },
+                    listeners: {
+                        activate: function(tab) {
+                            tab.loader.load();
+                        }
+                    }
+                }]
+            }
+            
+            ]
+        });
+        
+        function do_logout() {
+            Ext.Ajax.request({
+                url: BASE_URL + 'dashboard/logout',
+                method: 'POST',
+                success: function(xhr) {
+                    window.location = BASE_URL + 'login';
+                }
+            });
+        }
+
+        function loadTab(view,rec){
+            
+                var id = rec.raw.panel;
+                var cls = id;
+                var myTPanel = Ext.getCmp('myTPanel'); //get id xtype
+                //alert(tabs);
+                var tab = myTPanel.child('#' + id);
+                
+                if(tab){
+                    myTPanel.setActiveTab(tab);
+                } else {
+                    createItemTab(view,rec,id);
+                }
+                
+        }
+        
+        function createItemTab(view,rec,id)
+        {
+            var myTPanel = Ext.getCmp('myTPanel');
+            var tab;
+            tab = myTPanel.add(new Ext.Panel({
+            id: "tab" + id,
+            border:false,
+            title:    
+			shim :true,
+            layout: 'fit',
+            items : [{
+                xtype : "component",
+                id    : 'iframe-win',  // Add id
+                
+                autoEl : {
+                    tag : "iframe",
+                    src : "<?php echo base_url() ?>manages",
+                    border:false,
+                }
+            }],
+/*            autoLoad: {
+                showMask: true,
+                scripts: true,
+                mode: "iframe",
+                url: hostName+url
+            },*/
+            
+            closable: true
+        }));
+        myTPanel.setActiveTab(tab);
+           // myTPanel.add({
+//                title: rec.get('text'),
+//                iconCls: 'tabs',
+//                shim:true,
+//                deferredRender:false,
+//                itemId: id,                                    
+//                layout: 'fit',
+//                items: [ new Ext.ux.IFrameComponent({ id: id, name:rec.get('text'),  title:rec.get('text'), url: id }) ],
+//                closable: true
+//            }).show();
+        }
+    });
+    
+    </script>
+</head>
+<body>
+
+<div id="grid-example"></div>
+
+</body>
+</html>
